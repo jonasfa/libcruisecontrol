@@ -1,4 +1,4 @@
-require 'cruise_control_server'
+require 'cruise_control/server'
 require 'spec_helper'
 
 XML1 = <<XML
@@ -37,28 +37,35 @@ XML2 = <<XML
 </rss> 
 XML
 
-describe CruiseControlServer, '#new' do
+describe CruiseControl::Server, '#new' do
   it "should request the project list to the server" do
     stub_request(:any, "localhost:8990/dashboard/rss.xml").to_return :body => XML1
-    cc = CruiseControlServer.new 'localhost', 8990
+    cc = CruiseControl::Server.new 'localhost', 8990
     cc.projects.should == [{"title" => "connectfour passed Sat, 26 Jun 2010 18:07:28 -0300", "description"=> "Build passed", "pubDate" => "Sat, 26 Jun 2010 18:07:28 -0300", "link" => "http://localhost:8080/dashboard/tab/build/detail/connectfour"}]
+  end
+  it "should connect successfully to different servers and ports" do
+    stub_request(:any, "www.stub.com:8123/dashboard/rss.xml").to_return :body => XML1
+    cc = CruiseControl::Server.new 'www.stub.com', 8123
+    
+    stub_request(:any, "www.stub2.com/dashboard/rss.xml").to_return :body => XML1
+    cc = CruiseControl::Server.new 'www.stub2.com'
   end
 end
 
-describe CruiseControlServer, '#refresh' do
+describe CruiseControl::Server, '#refresh' do
   it "should retrieve the newest values" do
     stub_request(:any, "localhost:8990/dashboard/rss.xml").to_return :body => XML1
-    cc = CruiseControlServer.new 'localhost', 8990
+    cc = CruiseControl::Server.new 'localhost', 8990
     stub_request(:any, "localhost:8990/dashboard/rss.xml").to_return :body => XML2
     cc.refresh
     cc.projects.should == [{"title" => "connectfour passed Sat, 26 Jun 2010 20:07:28 -0300", "description"=> "Build passed", "pubDate" => "Sat, 26 Jun 2010 20:07:28 -0300", "link" => "http://localhost:8080/dashboard/tab/build/detail/connectfour"}]
   end
 end
 
-describe CruiseControlServer, '#pass?' do
+describe CruiseControl::Server, '#pass?' do
   it 'should return true if all projects passes' do
     stub_request(:any, "localhost:8990/dashboard/rss.xml").to_return :body => XML1
-    cc = CruiseControlServer.new 'localhost', 8990
+    cc = CruiseControl::Server.new 'localhost', 8990
     cc.pass?.should be true
   end
 end

@@ -1,11 +1,11 @@
-require 'project_proxy'
+require 'cruise_control/project_proxy'
 
-describe ProjectProxy, '#pass?' do
+describe CruiseControl::ProjectProxy, '#pass?' do
   it 'should return true if description is "Build passed"' do
-    ProjectProxy.new({'description' => 'Build passed'}).pass?.should be true
+    CruiseControl::ProjectProxy.new({'description' => 'Build passed'}).pass?.should be true
   end
   
   it 'should return false if description is not "Build passed"' do
-    ProjectProxy.new({'description' => 'Build failed'}).pass?.should be false
+    CruiseControl::ProjectProxy.new({'description' => 'Build failed'}).pass?.should be false
   end
 end
