@@ -1,5 +1,6 @@
 require 'active_support'
 require 'cruise_control/project_proxy'
+require 'net/http'
 
 module CruiseControl
   class Server
